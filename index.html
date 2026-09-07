@@ -3,161 +3,108 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Control de Vehículos - Campas ZAW</title>
-    <!-- Tailwind CSS para diseño móvil rápido -->
+    <title>ZAW Yard Control</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Librería oficial de Supabase -->
+    <!-- Supabase JS -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
-<body class="bg-gray-100 min-h-screen flex flex-col justify-between">
+<body class="bg-gray-50 min-h-screen flex flex-col">
 
-    <!-- Cabecera -->
-    <header class="bg-blue-600 text-white p-4 text-center shadow-md">
-        <h1 class="text-lg font-bold">Control de Vehículos (ZAW)</h1>
-        <p class="text-xs text-blue-200">Gestión de Campa y Localizaciones</p>
+    <!-- Cabecera tipo OneNote -->
+    <header class="bg-white border-b border-gray-200 px-4 py-3 flex justify-between items-center sticky top-0 z-10 shadow-sm">
+        <div>
+            <h1 class="text-sm font-bold text-gray-800 uppercase tracking-wide">ZAW Yard Control</h1>
+            <p class="text-[10px] text-gray-500">Live Fleet Management</p>
+        </div>
+        <button onclick="abrirModal()" class="bg-blue-600 hover:bg-blue-700 text-white w-9 h-9 rounded-full flex items-center justify-center font-bold text-lg shadow transition">
+            +
+        </button>
     </header>
 
-    <!-- Contenido Principal -->
-    <main class="p-4 max-w-md mx-auto w-full space-y-4">
-
-        <!-- Formulario de Registro -->
-        <div class="bg-white p-4 rounded-lg shadow-md space-y-3">
-            <h2 class="text-md font-semibold text-gray-800 border-b pb-2">Registrar / Actualizar Vehículo</h2>
-
-            <div>
-                <label class="block text-xs font-medium text-gray-700">VIN (Número)</label>
-                <input type="text" id="vin" placeholder="Ej: 3230" class="mt-1 block w-full p-2 border border-gray-300 rounded-md text-sm uppercase">
-            </div>
-
-            <div class="grid grid-cols-2 gap-2">
-                <div>
-                    <label class="block text-xs font-medium text-gray-700">Hardware / Baustatus</label>
-                    <input type="text" id="hw" placeholder="Ej: VFF / PVS" class="mt-1 block w-full p-2 border border-gray-300 rounded-md text-sm">
-                </div>
-                <div>
-                    <label class="block text-xs font-medium text-gray-700">Software (SW)</label>
-                    <input type="text" id="sw" placeholder="Ej: IDS8.2" class="mt-1 block w-full p-2 border border-gray-300 rounded-md text-sm">
-                </div>
-            </div>
-
-            <div class="grid grid-cols-3 gap-2">
-                <div>
-                    <label class="block text-xs font-medium text-gray-700">Power</label>
-                    <select id="power" class="mt-1 block w-full p-2 border border-gray-300 rounded-md text-sm bg-white">
-                        <option value="ON">ON</option>
-                        <option value="OFF">OFF</option>
-                        <option value="Sleep">Sleep</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-xs font-medium text-gray-700">Chemistry</label>
-                    <select id="chemistry" class="mt-1 block w-full p-2 border border-gray-300 rounded-md text-sm bg-white">
-                        <option value="NMC">NMC</option>
-                        <option value="LFP">LFP</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-xs font-medium text-gray-700">Location / Plaza</label>
-                    <input type="text" id="location" placeholder="Ej: xxxTCE" class="mt-1 block w-full p-2 border border-gray-300 rounded-md text-sm uppercase">
-                </div>
-            </div>
-
-            <button onclick="guardarVehiculo()" class="w-full bg-blue-600 text-white p-2 rounded-md font-bold hover:bg-blue-700 transition text-sm shadow">
-                Guardar en Supabase
-            </button>
-        </div>
-
-        <!-- Lista de Vehículos en la Base de Datos -->
-        <div class="bg-white p-4 rounded-lg shadow-md">
-            <h2 class="text-md font-semibold text-gray-800 mb-2">Vehículos en Campa</h2>
-            <div id="lista-vehiculos" class="space-y-2 text-xs text-gray-600">
-                <p class="italic text-gray-400">Cargando datos...</p>
+    <!-- Contenido Principal: Tabla Limpia -->
+    <main class="p-2 flex-1 max-w-4xl mx-auto w-full">
+        <div class="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse text-xs">
+                    <thead>
+                        <tr class="bg-gray-100 text-gray-600 border-b border-gray-200 uppercase text-[10px]">
+                            <th class="p-2">VIN</th>
+                            <th class="p-2">Location</th>
+                            <th class="p-2">Chemistry</th>
+                            <th class="p-2">HW / SW</th>
+                            <th class="p-2 text-center">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-vehiculos" class="divide-y divide-gray-100">
+                        <tr>
+                            <td colspan="5" class="p-4 text-center text-gray-400 italic">Loading fleet data...</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </main>
 
-    <!-- Pie de página -->
-    <footer class="text-center p-4 text-xs text-gray-500">
-        Netlify + Supabase Mobile App
-    </footer>
+    <!-- Ventana Modal para Añadir Vehículo (Oculta por defecto) -->
+    <div id="modal-vehiculo" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg max-w-sm w-full p-5 space-y-4 shadow-xl relative animate-in fade-in zoom-in duration-150">
+            <div class="flex justify-between items-center border-b pb-2">
+                <h2 class="text-sm font-bold text-gray-800">Add New Vehicle</h2>
+                <button onclick="cerrarModal()" class="text-gray-400 hover:text-gray-600 font-bold text-lg px-2">&times;</button>
+            </div>
 
-    <!-- Script de Conexión y Lógica -->
+            <div class="space-y-3 text-xs">
+                <div>
+                    <label class="block font-medium text-gray-700 mb-1">VIN</label>
+                    <input type="text" id="nuevo-vin" placeholder="e.g. 3230" class="w-full p-2 border border-gray-300 rounded uppercase">
+                </div>
+                <div>
+                    <label class="block font-medium text-gray-700 mb-1">Location (Plaza)</label>
+                    <input type="text" id="nuevo-location" placeholder="e.g. ZAW-04" class="w-full p-2 border border-gray-300 rounded uppercase">
+                </div>
+                <div>
+                    <label class="block font-medium text-gray-700 mb-1">Chemistry</label>
+                    <select id="nuevo-chemistry" class="w-full p-2 border border-gray-300 rounded bg-white">
+                        <option value="NMC">NMC</option>
+                        <option value="LFP">LFP</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="flex space-x-2 pt-2">
+                <button onclick="cerrarModal()" class="w-1/2 bg-gray-200 text-gray-700 py-2 rounded font-semibold hover:bg-gray-300 transition">Cancel</button>
+                <button onclick="guardarNuevoVehiculo()" class="w-1/2 bg-blue-600 text-white py-2 rounded font-semibold hover:bg-blue-700 transition">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script de Supabase y Lógica -->
     <script>
-        // --- PEGA TUS CREDENCIALES DE SUPABASE AQUÍ ---
+        // --- PEGA TU CLAVE ANON DE SUPABASE AQUÍ ---
         const SUPABASE_URL = 'https://yypvitglzuraojaappyn.supabase.co';
         const SUPABASE_ANON_KEY = 'PEGA_AQUÍ_TU_CLAVE_ANON_PÚBLICA';
-        // ----------------------------------------------
+        // ------------------------------------------
 
         const { createClient } = supabase;
         const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // Datos iniciales que me has proporcionado
-        const datosIniciales = [
-            { vin: "3230", hw: "SB_VFF_0035", sw: "", power: "ON", chemistry: "LFP", location: "xxxTCE" },
-            { vin: "3228", hw: "VFF_0043", sw: "", power: "ON", chemistry: "LFP", location: "Perdido" },
-            { vin: "3105", hw: "PVS_0126", sw: "", power: "ON", chemistry: "NMC", location: "TCE" },
-            { vin: "3109", hw: "SB_PVS_0153", sw: "", power: "ON", chemistry: "NMC", location: "089" },
-            { vin: "3053", hw: "0069", sw: "", power: "ON", chemistry: "NMC", location: "247" },
-            { vin: "3050", hw: "VW_0071", sw: "", power: "ON", chemistry: "NMC", location: "carpa conf 23" },
-            { vin: "3160", hw: "VW_0185", sw: "", power: "ON", chemistry: "NMC", location: "028" },
-            { vin: "1042", hw: "0181", sw: "", power: "ON", chemistry: "NMC", location: "Cargadores TCE (tiene mazo pirata)" },
-            { vin: "3047", hw: "0041", sw: "", power: "ON", chemistry: "NMC", location: "campa cota -5 plaza 137" },
-            { vin: "0132", hw: "AGT_0194", sw: "", power: "ON", chemistry: "LFP", location: "094" },
-            { vin: "3249", hw: "PVS_0089", sw: "", power: "ON", chemistry: "LFP", location: "CE88" },
-            { vin: "0214", hw: "PVS_0100", sw: "", power: "ON", chemistry: "NMC", location: "086" },
-            { vin: "110", hw: "PVS_0092", sw: "", power: "ON", chemistry: "LFP", location: "SIN PLAZA" },
-            { vin: "3292", hw: "S0_0106", sw: "", power: "ON", chemistry: "LFP", location: "159" },
-            { vin: "106", hw: "", sw: "", power: "ON", chemistry: "LFP", location: "cargadores TCE" },
-            { vin: "153", hw: "", sw: "IDS8.2", power: "ON", chemistry: "NMC", location: "139" }
-        ];
-
-        window.onload = async function() {
-            await verificarYCargarIniciales();
-            consultarVehiculos();
+        window.onload = function() {
+            cargarVehiculos();
         };
 
-        // Función para insertar los datos iniciales automáticamente si la tabla está vacía
-        async function verificarYCargarIniciales() {
-            const { count, error } = await _supabase
-                .from('vehiculos')
-                .select('*', { count: 'exact', head: true });
-
-            if (count === 0) {
-                await _supabase.from('vehiculos').insert(datosIniciales);
-            }
+        function abrirModal() {
+            document.getElementById('modal-vehiculo').classList.remove('hidden');
         }
 
-        async function guardarVehiculo() {
-            const vin = document.getElementById('vin').value.trim().toUpperCase();
-            const hw = document.getElementById('hw').value.trim();
-            const sw = document.getElementById('sw').value.trim();
-            const power = document.getElementById('power').value;
-            const chemistry = document.getElementById('chemistry').value;
-            const location = document.getElementById('location').value.trim();
-
-            if(!vin || !location) {
-                alert('Por favor, introduce al menos el VIN y la Location.');
-                return;
-            }
-
-            const { error } = await _supabase
-                .from('vehiculos')
-                .insert([{ vin, hw, sw, power, chemistry, location }]);
-
-            if (error) {
-                alert('Error al guardar: ' + error.message);
-            } else {
-                alert('¡Vehículo guardado correctamente!');
-                document.getElementById('vin').value = '';
-                document.getElementById('hw').value = '';
-                document.getElementById('sw').value = '';
-                document.getElementById('location').value = '';
-                consultarVehiculos();
-            }
+        function cerrarModal() {
+            document.getElementById('modal-vehiculo').classList.add('hidden');
+            document.getElementById('nuevo-vin').value = '';
+            document.getElementById('nuevo-location').value = '';
         }
 
-        async function consultarVehiculos() {
-            const contenedor = document.getElementById('lista-vehiculos');
+        async function cargarVehiculos() {
+            const tbody = document.getElementById('tabla-vehiculos');
 
             const { data, error } = await _supabase
                 .from('vehiculos')
@@ -165,30 +112,91 @@
                 .order('id', { ascending: false });
 
             if (error) {
-                contenedor.innerHTML = '<p class="text-red-500">Error al cargar los datos.</p>';
+                tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-red-500">Error loading data</td></tr>`;
                 return;
             }
 
             if (!data || data.length === 0) {
-                contenedor.innerHTML = '<p class="italic text-gray-400">No hay vehículos registrados.</p>';
+                tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-gray-400 italic">No vehicles found.</td></tr>`;
                 return;
             }
 
             let html = '';
             data.forEach(v => {
                 html += `
-                    <div class="p-2 border rounded bg-gray-50 flex justify-between items-center mb-1">
-                        <div>
-                            <span class="font-bold text-gray-900">VIN: ${v.vin}</span> <span class="text-xs bg-indigo-100 text-indigo-800 px-1 rounded">${v.chemistry}</span><br>
-                            Plaza: <span class="text-blue-600 font-semibold">${v.location}</span>
-                        </div>
-                        <div class="text-right text-[10px] text-gray-500">
+                    <tr class="hover:bg-gray-50 border-b border-gray-100">
+                        <td class="p-2 font-bold text-gray-900">${v.vin || '-'}</td>
+                        <td class="p-2">
+                            <input type="text" value="${v.location || ''}"
+                                onchange="actualizarCampo(${v.id}, 'location', this.value)"
+                                class="w-full p-1 border border-transparent hover:border-gray-300 focus:border-blue-500 rounded bg-transparent uppercase font-semibold text-blue-600">
+                        </td>
+                        <td class="p-2">
+                            <select onchange="actualizarCampo(${v.id}, 'chemistry', this.value)"
+                                class="p-1 border border-transparent hover:border-gray-300 focus:border-blue-500 rounded bg-transparent text-gray-700 font-medium">
+                                <option value="NMC" ${v.chemistry === 'NMC' ? 'selected' : ''}>NMC</option>
+                                <option value="LFP" ${v.chemistry === 'LFP' ? 'selected' : ''}>LFP</option>
+                            </select>
+                        </td>
+                        <td class="p-2 text-gray-500 text-[10px]">
                             HW: ${v.hw || '-'}<br>SW: ${v.sw || '-'}
-                        </div>
-                    </div>
+                        </td>
+                        <td class="p-2 text-center">
+                            <button onclick="eliminarVehiculo(${v.id})" class="text-red-400 hover:text-red-600 font-bold px-1" title="Delete">×</button>
+                        </td>
+                    </tr>
                 `;
             });
-            contenedor.innerHTML = html;
+            tbody.innerHTML = html;
+        }
+
+        async function guardarNuevoVehiculo() {
+            const vin = document.getElementById('nuevo-vin').value.trim().toUpperCase();
+            const location = document.getElementById('nuevo-location').value.trim();
+            const chemistry = document.getElementById('nuevo-chemistry').value;
+
+            if(!vin || !location) {
+                alert('Please enter both VIN and Location.');
+                return;
+            }
+
+            const { error } = await _supabase
+                .from('vehiculos')
+                .insert([{ vin, location, chemistry, power: 'ON' }]);
+
+            if (error) {
+                alert('Error: ' + error.message);
+            } else {
+                cerrarModal();
+                cargarVehiculos();
+            }
+        }
+
+        async function actualizarCampo(id, campo, valor) {
+            const { error } = await _supabase
+                .from('vehiculos')
+                .update({ [campo]: valor })
+                .eq('id', id);
+
+            if (error) {
+                alert('Error updating field: ' + error.message);
+                cargarVehiculos();
+            }
+        }
+
+        async function eliminarVehiculo(id) {
+            if(confirm('Are you sure you want to delete this vehicle?')) {
+                const { error } = await _supabase
+                    .from('vehiculos')
+                    .delete()
+                    .eq('id', id);
+
+                if(error) {
+                    alert('Error deleting: ' + error.message);
+                } else {
+                    cargarVehiculos();
+                }
+            }
         }
     </script>
 </body>
