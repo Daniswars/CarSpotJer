@@ -3,16 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Control de Vehículos - Campas</title>
+    <title>Control de Vehículos - Campas ZAW</title>
     <!-- Tailwind CSS para diseño móvil rápido -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Librería oficial de Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body class="bg-gray-100 min-h-screen flex flex-col justify-between">
 
     <!-- Cabecera -->
     <header class="bg-blue-600 text-white p-4 text-center shadow-md">
         <h1 class="text-lg font-bold">Control de Vehículos (ZAW)</h1>
-        <p class="text-xs text-blue-200">Gestión de VIN, HW, SW y Plazas</p>
+        <p class="text-xs text-blue-200">Gestión de Campa y Localizaciones</p>
     </header>
 
     <!-- Contenido Principal -->
@@ -23,22 +25,22 @@
             <h2 class="text-md font-semibold text-gray-800 border-b pb-2">Registrar / Actualizar Vehículo</h2>
 
             <div>
-                <label class="block text-xs font-medium text-gray-700">VIN (Bastidor)</label>
-                <input type="text" id="vin" placeholder="Ej: WVWZZZ..." class="mt-1 block w-full p-2 border border-gray-300 rounded-md text-sm uppercase">
+                <label class="block text-xs font-medium text-gray-700">VIN (Número)</label>
+                <input type="text" id="vin" placeholder="Ej: 3230" class="mt-1 block w-full p-2 border border-gray-300 rounded-md text-sm uppercase">
             </div>
 
             <div class="grid grid-cols-2 gap-2">
                 <div>
-                    <label class="block text-xs font-medium text-gray-700">Hardware (HW)</label>
-                    <input type="text" id="hw" placeholder="Ej: H05" class="mt-1 block w-full p-2 border border-gray-300 rounded-md text-sm">
+                    <label class="block text-xs font-medium text-gray-700">Hardware / Baustatus</label>
+                    <input type="text" id="hw" placeholder="Ej: VFF / PVS" class="mt-1 block w-full p-2 border border-gray-300 rounded-md text-sm">
                 </div>
                 <div>
                     <label class="block text-xs font-medium text-gray-700">Software (SW)</label>
-                    <input type="text" id="sw" placeholder="Ej: 1234" class="mt-1 block w-full p-2 border border-gray-300 rounded-md text-sm">
+                    <input type="text" id="sw" placeholder="Ej: IDS8.2" class="mt-1 block w-full p-2 border border-gray-300 rounded-md text-sm">
                 </div>
             </div>
 
-            <div class="grid grid-cols-2 gap-2">
+            <div class="grid grid-cols-3 gap-2">
                 <div>
                     <label class="block text-xs font-medium text-gray-700">Power</label>
                     <select id="power" class="mt-1 block w-full p-2 border border-gray-300 rounded-md text-sm bg-white">
@@ -48,72 +50,137 @@
                     </select>
                 </div>
                 <div>
-                    <label class="block text-xs font-medium text-gray-700">Plaza Aparcada (ZAW)</label>
-                    <input type="text" id="plaza" placeholder="Ej: ZAW-04" class="mt-1 block w-full p-2 border border-gray-300 rounded-md text-sm uppercase">
+                    <label class="block text-xs font-medium text-gray-700">Chemistry</label>
+                    <select id="chemistry" class="mt-1 block w-full p-2 border border-gray-300 rounded-md text-sm bg-white">
+                        <option value="NMC">NMC</option>
+                        <option value="LFP">LFP</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-gray-700">Location / Plaza</label>
+                    <input type="text" id="location" placeholder="Ej: xxxTCE" class="mt-1 block w-full p-2 border border-gray-300 rounded-md text-sm uppercase">
                 </div>
             </div>
 
             <button onclick="guardarVehiculo()" class="w-full bg-blue-600 text-white p-2 rounded-md font-bold hover:bg-blue-700 transition text-sm shadow">
-                Guardar en la Campa
+                Guardar en Supabase
             </button>
         </div>
 
-        <!-- Lista de Vehículos Registrados (Temporal en memoria) -->
+        <!-- Lista de Vehículos en la Base de Datos -->
         <div class="bg-white p-4 rounded-lg shadow-md">
-            <h2 class="text-md font-semibold text-gray-800 mb-2">Últimos Registros</h2>
+            <h2 class="text-md font-semibold text-gray-800 mb-2">Vehículos en Campa</h2>
             <div id="lista-vehiculos" class="space-y-2 text-xs text-gray-600">
-                <p class="italic text-gray-400">No hay vehículos registrados todavía en esta sesión.</p>
+                <p class="italic text-gray-400">Cargando datos...</p>
             </div>
         </div>
     </main>
 
     <!-- Pie de página -->
     <footer class="text-center p-4 text-xs text-gray-500">
-        Netlify Mobile App &bull; Control Campas
+        Netlify + Supabase Mobile App
     </footer>
 
+    <!-- Script de Conexión y Lógica -->
     <script>
-        // Array temporal para simular la base de datos localmente
-        let vehiculos = [];
+        // --- PEGA TUS CREDENCIALES DE SUPABASE AQUÍ ---
+        const SUPABASE_URL = 'https://yypvitglzuraojaappyn.supabase.co';
+        const SUPABASE_ANON_KEY = 'PEGA_AQUÍ_TU_CLAVE_ANON_PÚBLICA';
+        // ----------------------------------------------
 
-        function guardarVehiculo() {
-            const vin = document.getElementById('vin').value.trim();
+        const { createClient } = supabase;
+        const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // Datos iniciales que me has proporcionado
+        const datosIniciales = [
+            { vin: "3230", hw: "SB_VFF_0035", sw: "", power: "ON", chemistry: "LFP", location: "xxxTCE" },
+            { vin: "3228", hw: "VFF_0043", sw: "", power: "ON", chemistry: "LFP", location: "Perdido" },
+            { vin: "3105", hw: "PVS_0126", sw: "", power: "ON", chemistry: "NMC", location: "TCE" },
+            { vin: "3109", hw: "SB_PVS_0153", sw: "", power: "ON", chemistry: "NMC", location: "089" },
+            { vin: "3053", hw: "0069", sw: "", power: "ON", chemistry: "NMC", location: "247" },
+            { vin: "3050", hw: "VW_0071", sw: "", power: "ON", chemistry: "NMC", location: "carpa conf 23" },
+            { vin: "3160", hw: "VW_0185", sw: "", power: "ON", chemistry: "NMC", location: "028" },
+            { vin: "1042", hw: "0181", sw: "", power: "ON", chemistry: "NMC", location: "Cargadores TCE (tiene mazo pirata)" },
+            { vin: "3047", hw: "0041", sw: "", power: "ON", chemistry: "NMC", location: "campa cota -5 plaza 137" },
+            { vin: "0132", hw: "AGT_0194", sw: "", power: "ON", chemistry: "LFP", location: "094" },
+            { vin: "3249", hw: "PVS_0089", sw: "", power: "ON", chemistry: "LFP", location: "CE88" },
+            { vin: "0214", hw: "PVS_0100", sw: "", power: "ON", chemistry: "NMC", location: "086" },
+            { vin: "110", hw: "PVS_0092", sw: "", power: "ON", chemistry: "LFP", location: "SIN PLAZA" },
+            { vin: "3292", hw: "S0_0106", sw: "", power: "ON", chemistry: "LFP", location: "159" },
+            { vin: "106", hw: "", sw: "", power: "ON", chemistry: "LFP", location: "cargadores TCE" },
+            { vin: "153", hw: "", sw: "IDS8.2", power: "ON", chemistry: "NMC", location: "139" }
+        ];
+
+        window.onload = async function() {
+            await verificarYCargarIniciales();
+            consultarVehiculos();
+        };
+
+        // Función para insertar los datos iniciales automáticamente si la tabla está vacía
+        async function verificarYCargarIniciales() {
+            const { count, error } = await _supabase
+                .from('vehiculos')
+                .select('*', { count: 'exact', head: true });
+
+            if (count === 0) {
+                await _supabase.from('vehiculos').insert(datosIniciales);
+            }
+        }
+
+        async function guardarVehiculo() {
+            const vin = document.getElementById('vin').value.trim().toUpperCase();
             const hw = document.getElementById('hw').value.trim();
             const sw = document.getElementById('sw').value.trim();
             const power = document.getElementById('power').value;
-            const plaza = document.getElementById('plaza').value.trim();
+            const chemistry = document.getElementById('chemistry').value;
+            const location = document.getElementById('location').value.trim();
 
-            if(!vin || !plaza) {
-                alert('Por favor, introduce al menos el VIN y la plaza.');
+            if(!vin || !location) {
+                alert('Por favor, introduce al menos el VIN y la Location.');
                 return;
             }
 
-            // Añadir al array
-            vehiculos.unshift({ vin, hw, sw, power, plaza });
+            const { error } = await _supabase
+                .from('vehiculos')
+                .insert([{ vin, hw, sw, power, chemistry, location }]);
 
-            // Limpiar campos de entrada
-            document.getElementById('vin').value = '';
-            document.getElementById('hw').value = '';
-            document.getElementById('sw').value = '';
-            document.getElementById('plaza').value = '';
-
-            actualizarLista();
+            if (error) {
+                alert('Error al guardar: ' + error.message);
+            } else {
+                alert('¡Vehículo guardado correctamente!');
+                document.getElementById('vin').value = '';
+                document.getElementById('hw').value = '';
+                document.getElementById('sw').value = '';
+                document.getElementById('location').value = '';
+                consultarVehiculos();
+            }
         }
 
-        function actualizarLista() {
+        async function consultarVehiculos() {
             const contenedor = document.getElementById('lista-vehiculos');
-            if (vehiculos.length === 0) {
-                contenedor.innerHTML = '<p class="italic text-gray-400">No hay vehículos registrados todavía en esta sesión.</p>';
+
+            const { data, error } = await _supabase
+                .from('vehiculos')
+                .select('*')
+                .order('id', { ascending: false });
+
+            if (error) {
+                contenedor.innerHTML = '<p class="text-red-500">Error al cargar los datos.</p>';
+                return;
+            }
+
+            if (!data || data.length === 0) {
+                contenedor.innerHTML = '<p class="italic text-gray-400">No hay vehículos registrados.</p>';
                 return;
             }
 
             let html = '';
-            vehiculos.forEach(v => {
+            data.forEach(v => {
                 html += `
-                    <div class="p-2 border rounded bg-gray-50 flex justify-between items-center">
+                    <div class="p-2 border rounded bg-gray-50 flex justify-between items-center mb-1">
                         <div>
-                            <span class="font-bold text-gray-900">${v.vin}</span><br>
-                            Plaza: <span class="text-blue-600 font-semibold">${v.plaza}</span> | Power: ${v.power}
+                            <span class="font-bold text-gray-900">VIN: ${v.vin}</span> <span class="text-xs bg-indigo-100 text-indigo-800 px-1 rounded">${v.chemistry}</span><br>
+                            Plaza: <span class="text-blue-600 font-semibold">${v.location}</span>
                         </div>
                         <div class="text-right text-[10px] text-gray-500">
                             HW: ${v.hw || '-'}<br>SW: ${v.sw || '-'}
