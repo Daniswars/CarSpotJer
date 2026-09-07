@@ -1,10 +1,128 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control de Vehículos - Campas</title>
+    <!-- Tailwind CSS para diseño móvil rápido -->
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
+<body class="bg-gray-100 min-h-screen flex flex-col justify-between">
 
+    <!-- Cabecera -->
+    <header class="bg-blue-600 text-white p-4 text-center shadow-md">
+        <h1 class="text-lg font-bold">Control de Vehículos (ZAW)</h1>
+        <p class="text-xs text-blue-200">Gestión de VIN, HW, SW y Plazas</p>
+    </header>
+
+    <!-- Contenido Principal -->
+    <main class="p-4 max-w-md mx-auto w-full space-y-4">
+
+        <!-- Formulario de Registro -->
+        <div class="bg-white p-4 rounded-lg shadow-md space-y-3">
+            <h2 class="text-md font-semibold text-gray-800 border-b pb-2">Registrar / Actualizar Vehículo</h2>
+
+            <div>
+                <label class="block text-xs font-medium text-gray-700">VIN (Bastidor)</label>
+                <input type="text" id="vin" placeholder="Ej: WVWZZZ..." class="mt-1 block w-full p-2 border border-gray-300 rounded-md text-sm uppercase">
+            </div>
+
+            <div class="grid grid-cols-2 gap-2">
+                <div>
+                    <label class="block text-xs font-medium text-gray-700">Hardware (HW)</label>
+                    <input type="text" id="hw" placeholder="Ej: H05" class="mt-1 block w-full p-2 border border-gray-300 rounded-md text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-gray-700">Software (SW)</label>
+                    <input type="text" id="sw" placeholder="Ej: 1234" class="mt-1 block w-full p-2 border border-gray-300 rounded-md text-sm">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2">
+                <div>
+                    <label class="block text-xs font-medium text-gray-700">Power</label>
+                    <select id="power" class="mt-1 block w-full p-2 border border-gray-300 rounded-md text-sm bg-white">
+                        <option value="ON">ON</option>
+                        <option value="OFF">OFF</option>
+                        <option value="Sleep">Sleep</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-gray-700">Plaza Aparcada (ZAW)</label>
+                    <input type="text" id="plaza" placeholder="Ej: ZAW-04" class="mt-1 block w-full p-2 border border-gray-300 rounded-md text-sm uppercase">
+                </div>
+            </div>
+
+            <button onclick="guardarVehiculo()" class="w-full bg-blue-600 text-white p-2 rounded-md font-bold hover:bg-blue-700 transition text-sm shadow">
+                Guardar en la Campa
+            </button>
+        </div>
+
+        <!-- Lista de Vehículos Registrados (Temporal en memoria) -->
+        <div class="bg-white p-4 rounded-lg shadow-md">
+            <h2 class="text-md font-semibold text-gray-800 mb-2">Últimos Registros</h2>
+            <div id="lista-vehiculos" class="space-y-2 text-xs text-gray-600">
+                <p class="italic text-gray-400">No hay vehículos registrados todavía en esta sesión.</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Pie de página -->
+    <footer class="text-center p-4 text-xs text-gray-500">
+        Netlify Mobile App &bull; Control Campas
+    </footer>
+
+    <script>
+        // Array temporal para simular la base de datos localmente
+        let vehiculos = [];
+
+        function guardarVehiculo() {
+            const vin = document.getElementById('vin').value.trim();
+            const hw = document.getElementById('hw').value.trim();
+            const sw = document.getElementById('sw').value.trim();
+            const power = document.getElementById('power').value;
+            const plaza = document.getElementById('plaza').value.trim();
+
+            if(!vin || !plaza) {
+                alert('Por favor, introduce al menos el VIN y la plaza.');
+                return;
+            }
+
+            // Añadir al array
+            vehiculos.unshift({ vin, hw, sw, power, plaza });
+
+            // Limpiar campos de entrada
+            document.getElementById('vin').value = '';
+            document.getElementById('hw').value = '';
+            document.getElementById('sw').value = '';
+            document.getElementById('plaza').value = '';
+
+            actualizarLista();
+        }
+
+        function actualizarLista() {
+            const contenedor = document.getElementById('lista-vehiculos');
+            if (vehiculos.length === 0) {
+                contenedor.innerHTML = '<p class="italic text-gray-400">No hay vehículos registrados todavía en esta sesión.</p>';
+                return;
+            }
+
+            let html = '';
+            vehiculos.forEach(v => {
+                html += `
+                    <div class="p-2 border rounded bg-gray-50 flex justify-between items-center">
+                        <div>
+                            <span class="font-bold text-gray-900">${v.vin}</span><br>
+                            Plaza: <span class="text-blue-600 font-semibold">${v.plaza}</span> | Power: ${v.power}
+                        </div>
+                        <div class="text-right text-[10px] text-gray-500">
+                            HW: ${v.hw || '-'}<br>SW: ${v.sw || '-'}
+                        </div>
+                    </div>
+                `;
+            });
+            contenedor.innerHTML = html;
+        }
+    </script>
 </body>
 </html>
