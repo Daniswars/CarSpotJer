@@ -4,11 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CTS - Centro Técnico SEAT</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Supabase JS -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body class="bg-slate-50 min-h-screen flex flex-col font-sans">
 
+    <!-- Cabecera Limpia -->
     <header class="bg-white border-b border-slate-200 px-4 py-3 flex justify-between items-center sticky top-0 z-10 shadow-sm">
         <div>
             <h1 class="text-sm font-bold text-slate-800 uppercase tracking-wide">CTS SEAT</h1>
@@ -19,6 +22,7 @@
         </button>
     </header>
 
+    <!-- Contenido Principal: Tabla -->
     <main class="p-2 sm:p-4 flex-1 max-w-4xl mx-auto w-full">
         <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
             <div class="overflow-x-auto">
@@ -41,6 +45,7 @@
         </div>
     </main>
 
+    <!-- Ventana Modal Oculta por Defecto -->
     <div id="modal-vehiculo" class="fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4 transition-all">
         <div class="bg-white rounded-2xl max-w-sm w-full p-5 space-y-4 shadow-2xl border border-slate-100 transform scale-100 transition-transform">
             <div class="flex justify-between items-center border-b border-slate-100 pb-3">
@@ -76,6 +81,7 @@
         </div>
     </div>
 
+    <!-- Script de Supabase y Lógica -->
     <script>
         // --- CREDENCIALES DE SUPABASE ---
         const SUPABASE_URL = 'https://yypvitglzuraojaappyn.supabase.co';
@@ -84,6 +90,9 @@
 
         const { createClient } = supabase;
         const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // Nombre actualizado de tu tabla en Supabase
+        const TABLA = 'vehiculos';
 
         window.onload = function() {
             cargarVehiculos();
@@ -103,12 +112,12 @@
             const tbody = document.getElementById('tabla-vehiculos');
 
             const { data, error } = await _supabase
-                .from('vehiculos')
+                .from(TABLA)
                 .select('*')
                 .order('id', { ascending: false });
 
             if (error) {
-                tbody.innerHTML = `<tr><td colspan="4" class="p-6 text-center text-red-500 font-medium">Error loading data: ${error.message}</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="4" class="p-6 text-center text-red-500 font-medium">Error: ${error.message}</td></tr>`;
                 return;
             }
 
@@ -119,23 +128,27 @@
 
             let html = '';
             data.forEach(v => {
-                const chemBadge = v.chemistry === 'LFP'
+                const chemBadge = v.Chemistry === 'LFP' || v.chemistry === 'LFP'
                     ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
                     : 'bg-indigo-50 text-indigo-700 border-indigo-200';
 
+                const vinVal = v.VIN || v.vin || '-';
+                const locVal = v.Location || v.location || '';
+                const chemVal = v.Chemistry || v.chemistry || 'NMC';
+
                 html += `
                     <tr class="hover:bg-slate-50/80 transition-colors">
-                        <td class="py-3 px-3 font-bold text-slate-900">${v.vin || '-'}</td>
+                        <td class="py-3 px-3 font-bold text-slate-900">${vinVal}</td>
                         <td class="py-3 px-3">
-                            <input type="text" value="${v.location || ''}"
-                                onchange="actualizarCampo(${v.id}, 'location', this.value)"
+                            <input type="text" value="${locVal}"
+                                onchange="actualizarCampo(${v.id}, 'Location', this.value)"
                                 class="w-full p-1.5 border border-transparent hover:border-slate-200 focus:border-blue-500 focus:bg-white rounded font-semibold text-blue-600 bg-transparent uppercase transition">
                         </td>
                         <td class="py-3 px-3">
-                            <select onchange="actualizarCampo(${v.id}, 'chemistry', this.value)"
+                            <select onchange="actualizarCampo(${v.id}, 'Chemistry', this.value)"
                                 class="p-1.5 border border-transparent hover:border-slate-200 focus:border-blue-500 focus:bg-white rounded font-medium text-xs ${chemBadge} border outline-none transition">
-                                <option value="NMC" ${v.chemistry === 'NMC' ? 'selected' : ''}>NMC</option>
-                                <option value="LFP" ${v.chemistry === 'LFP' ? 'selected' : ''}>LFP</option>
+                                <option value="NMC" ${chemVal === 'NMC' ? 'selected' : ''}>NMC</option>
+                                <option value="LFP" ${chemVal === 'LFP' ? 'selected' : ''}>LFP</option>
                             </select>
                         </td>
                         <td class="py-3 px-3 text-center">
@@ -158,8 +171,8 @@
             }
 
             const { error } = await _supabase
-                .from('vehiculos')
-                .insert([{ vin, location, chemistry }]);
+                .from(TABLA)
+                .insert([{ VIN: vin, Location: location, Chemistry: chemistry }]);
 
             if (error) {
                 alert('Error: ' + error.message);
@@ -170,9 +183,9 @@
         }
 
         async function actualizarCampo(id, campo, valor) {
-            const valorFinal = campo === 'location' ? valor.toUpperCase() : valor;
+            const valorFinal = campo === 'Location' ? valor.toUpperCase() : valor;
             const { error } = await _supabase
-                .from('vehiculos')
+                .from(TABLA)
                 .update({ [campo]: valorFinal })
                 .eq('id', id);
 
@@ -185,7 +198,7 @@
         async function eliminarVehiculo(id) {
             if(confirm('Are you sure you want to delete this vehicle?')) {
                 const { error } = await _supabase
-                    .from('vehiculos')
+                    .from(TABLA)
                     .delete()
                     .eq('id', id);
 
