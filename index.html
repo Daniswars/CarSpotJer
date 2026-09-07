@@ -9,35 +9,39 @@
     <!-- Supabase JS -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
-<body class="bg-slate-50 min-h-screen flex flex-col font-sans">
+<body class="bg-slate-100 min-h-screen flex flex-col font-sans text-slate-800">
 
-    <!-- Cabecera Limpia -->
-    <header class="bg-white border-b border-slate-200 px-4 py-3 flex justify-between items-center sticky top-0 z-10 shadow-sm">
+    <!-- Cabecera Profesional -->
+    <header class="bg-white border-b border-slate-200 px-6 py-4 flex justify-between items-center sticky top-0 z-10 shadow-sm">
         <div>
-            <h1 class="text-sm font-bold text-slate-800 uppercase tracking-wide">CTS SEAT</h1>
-            <p class="text-[10px] text-slate-500 font-medium">Centro Técnico • Fleet Management</p>
+            <h1 class="text-base font-extrabold text-slate-900 tracking-tight">CTS SEAT</h1>
+            <p class="text-xs text-slate-500 font-medium">Centro Técnico • Fleet Management Pro</p>
         </div>
-        <button onclick="abrirModal()" class="bg-blue-600 hover:bg-blue-700 active:scale-95 text-white w-9 h-9 rounded-full flex items-center justify-center font-bold text-lg shadow-md transition-all duration-150">
+        <button onclick="abrirModal()" class="bg-blue-600 hover:bg-blue-700 active:scale-95 text-white w-10 h-10 rounded-full flex items-center justify-center font-bold text-xl shadow-md transition-all duration-150" title="Add Vehicle">
             +
         </button>
     </header>
 
-    <!-- Contenido Principal: Tabla -->
-    <main class="p-2 sm:p-4 flex-1 max-w-4xl mx-auto w-full">
-        <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+    <!-- Contenido Principal: Tabla Pro -->
+    <main class="p-4 sm:p-6 flex-1 max-w-4xl mx-auto w-full">
+        <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse text-xs">
                     <thead>
-                        <tr class="bg-slate-100 text-slate-600 border-b border-slate-200 uppercase text-[10px] tracking-wider">
-                            <th class="py-3 px-3">VIN</th>
-                            <th class="py-3 px-3">Location</th>
-                            <th class="py-3 px-3">Chemistry</th>
-                            <th class="py-3 px-3 text-center">Action</th>
+                        <tr class="bg-slate-900 text-white uppercase text-[11px] tracking-wider">
+                            <th onclick="ordenarPor('VIN')" class="py-3.5 px-4 cursor-pointer hover:bg-slate-800 transition select-none">
+                                VIN ↕
+                            </th>
+                            <th class="py-3.5 px-4">Location</th>
+                            <th onclick="ordenarPor('Chemistry')" class="py-3.5 px-4 cursor-pointer hover:bg-slate-800 transition select-none">
+                                Chemistry ↕
+                            </th>
+                            <th class="py-3.5 px-4 text-center">Action</th>
                         </tr>
                     </thead>
                     <tbody id="tabla-vehiculos" class="divide-y divide-slate-100">
                         <tr>
-                            <td colspan="4" class="p-6 text-center text-slate-400 italic font-medium">Loading fleet data...</td>
+                            <td colspan="4" class="p-8 text-center text-slate-400 italic font-medium">Loading fleet data...</td>
                         </tr>
                     </tbody>
                 </table>
@@ -45,18 +49,18 @@
         </div>
     </main>
 
-    <!-- Ventana Modal Oculta por Defecto -->
-    <div id="modal-vehiculo" class="fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4 transition-all">
-        <div class="bg-white rounded-2xl max-w-sm w-full p-5 space-y-4 shadow-2xl border border-slate-100 transform scale-100 transition-transform">
+    <!-- Ventana Modal Emergente (Oculta por defecto) -->
+    <div id="modal-vehiculo" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4 transition-all">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-6 space-y-4 shadow-2xl border border-slate-100 transform scale-100 transition-transform">
             <div class="flex justify-between items-center border-b border-slate-100 pb-3">
                 <div>
-                    <h2 class="text-sm font-bold text-slate-800">Add New Vehicle</h2>
-                    <p class="text-[10px] text-slate-400">Register a new unit into the fleet</p>
+                    <h2 class="text-sm font-bold text-slate-900">Add New Vehicle</h2>
+                    <p class="text-[11px] text-slate-500">Register a new unit into the fleet</p>
                 </div>
-                <button onclick="cerrarModal()" class="text-slate-400 hover:text-slate-600 font-bold text-xl px-2">&times;</button>
+                <button onclick="cerrarModal()" class="text-slate-400 hover:text-slate-700 font-bold text-2xl px-1 leading-none">&times;</button>
             </div>
 
-            <div class="space-y-3 text-xs">
+            <div class="space-y-3.5 text-xs">
                 <div>
                     <label class="block font-semibold text-slate-700 mb-1">VIN</label>
                     <input type="text" id="nuevo-vin" placeholder="e.g. 3230" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg uppercase focus:bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition">
@@ -74,9 +78,9 @@
                 </div>
             </div>
 
-            <div class="flex space-x-2 pt-2">
-                <button onclick="cerrarModal()" class="w-1/2 bg-slate-100 text-slate-700 py-2.5 rounded-lg font-semibold hover:bg-slate-200 transition">Cancel</button>
-                <button onclick="guardarNuevoVehiculo()" class="w-1/2 bg-blue-600 text-white py-2.5 rounded-lg font-semibold hover:bg-blue-700 shadow-sm transition">Save</button>
+            <div class="flex space-x-3 pt-2">
+                <button onclick="cerrarModal()" class="w-1/2 bg-slate-100 text-slate-700 py-2.5 rounded-xl font-semibold hover:bg-slate-200 transition">Cancel</button>
+                <button onclick="guardarNuevoVehiculo()" class="w-1/2 bg-blue-600 text-white py-2.5 rounded-xl font-semibold hover:bg-blue-700 shadow-md shadow-blue-200 transition">Save</button>
             </div>
         </div>
     </div>
@@ -90,9 +94,10 @@
 
         const { createClient } = supabase;
         const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-        // Nombre actualizado de tu tabla en Supabase
         const TABLA = 'vehiculos';
+
+        let listaVehiculos = [];
+        let ordenActual = { campo: 'VIN', ascendente: true };
 
         window.onload = function() {
             cargarVehiculos();
@@ -113,51 +118,80 @@
 
             const { data, error } = await _supabase
                 .from(TABLA)
-                .select('*')
-                .order('id', { ascending: false });
+                .select('*');
 
             if (error) {
                 tbody.innerHTML = `<tr><td colspan="4" class="p-6 text-center text-red-500 font-medium">Error: ${error.message}</td></tr>`;
                 return;
             }
 
-            if (!data || data.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="4" class="p-6 text-center text-slate-400 italic">No vehicles found.</td></tr>`;
+            listaVehiculos = data || [];
+            renderizarTabla();
+        }
+
+        function renderizarTabla() {
+            const tbody = document.getElementById('tabla-vehiculos');
+
+            if (listaVehiculos.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" class="p-8 text-center text-slate-400 italic">No vehicles found.</td></tr>`;
                 return;
             }
 
+            // Ordenar datos
+            listaVehiculos.sort((a, b) => {
+                let valA = (a[ordenActual.campo] || '').toString().toUpperCase();
+                let valB = (b[ordenActual.campo] || '').toString().toUpperCase();
+
+                if (valA < valB) return ordenActual.ascendente ? -1 : 1;
+                if (valA > valB) return ordenActual.ascendente ? 1 : -1;
+                return 0;
+            });
+
             let html = '';
-            data.forEach(v => {
-                const chemBadge = v.Chemistry === 'LFP' || v.chemistry === 'LFP'
+            listaVehiculos.forEach((v, index) => {
+                // Líneas con colores alternos (efecto cebra sutil)
+                const rowBg = index % 2 === 0 ? 'bg-white' : 'bg-slate-50/70';
+
+                const chemVal = v.Chemistry || v.chemistry || 'NMC';
+                const chemBadge = chemVal === 'LFP'
                     ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
                     : 'bg-indigo-50 text-indigo-700 border-indigo-200';
 
                 const vinVal = v.VIN || v.vin || '-';
                 const locVal = v.Location || v.location || '';
-                const chemVal = v.Chemistry || v.chemistry || 'NMC';
 
                 html += `
-                    <tr class="hover:bg-slate-50/80 transition-colors">
-                        <td class="py-3 px-3 font-bold text-slate-900">${vinVal}</td>
-                        <td class="py-3 px-3">
+                    <tr class="${rowBg} hover:bg-blue-50/50 transition-colors">
+                        <td class="py-3.5 px-4 font-bold text-slate-900">${vinVal}</td>
+                        <td class="py-3.5 px-4">
                             <input type="text" value="${locVal}"
                                 onchange="actualizarCampo(${v.id}, 'Location', this.value)"
-                                class="w-full p-1.5 border border-transparent hover:border-slate-200 focus:border-blue-500 focus:bg-white rounded font-semibold text-blue-600 bg-transparent uppercase transition">
+                                class="w-full p-1.5 border border-transparent hover:border-slate-300 focus:border-blue-500 focus:bg-white rounded font-semibold text-blue-600 bg-transparent uppercase transition shadow-2xs">
                         </td>
-                        <td class="py-3 px-3">
+                        <td class="py-3.5 px-4">
                             <select onchange="actualizarCampo(${v.id}, 'Chemistry', this.value)"
-                                class="p-1.5 border border-transparent hover:border-slate-200 focus:border-blue-500 focus:bg-white rounded font-medium text-xs ${chemBadge} border outline-none transition">
+                                class="p-1.5 rounded-lg font-medium text-xs ${chemBadge} border outline-none cursor-pointer transition shadow-2xs">
                                 <option value="NMC" ${chemVal === 'NMC' ? 'selected' : ''}>NMC</option>
                                 <option value="LFP" ${chemVal === 'LFP' ? 'selected' : ''}>LFP</option>
                             </select>
                         </td>
-                        <td class="py-3 px-3 text-center">
-                            <button onclick="eliminarVehiculo(${v.id})" class="text-slate-300 hover:text-red-500 font-bold p-1 rounded transition" title="Delete">×</button>
+                        <td class="py-3.5 px-4 text-center">
+                            <button onclick="eliminarVehiculo(${v.id})" class="text-slate-400 hover:text-red-600 font-bold p-1.5 rounded-lg hover:bg-red-50 transition" title="Delete">×</button>
                         </td>
                     </tr>
                 `;
             });
             tbody.innerHTML = html;
+        }
+
+        function ordenarPor(campo) {
+            if (ordenActual.campo === campo) {
+                ordenActual.ascendente = !ordenActual.ascendente;
+            } else {
+                ordenActual.campo = campo;
+                ordenActual.ascendente = true;
+            }
+            renderizarTabla();
         }
 
         async function guardarNuevoVehiculo() {
