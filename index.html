@@ -106,7 +106,7 @@
                     <select id="new-status" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition">
                         <option value="Available">Available</option>
                         <option value="Returned">Returned</option>
-                        <option value="Ocupado">Ocupado</option>
+                        <option value="In Use">In Use</option>
                     </select>
                 </div>
             </div>
@@ -202,11 +202,11 @@
                 else if (userVal === 'HVS') userBadge = 'bg-rose-50 text-rose-700 border-rose-200';
                 else if (userVal === 'HUT') userBadge = 'bg-blue-50 text-blue-700 border-blue-200';
 
-                // Colores específicos para Status: Available (Verde), Returned (Gris), Ocupado (Rojo)
+                // Colores específicos para Status: Available (Verde), Returned (Gris), In Use (Rojo)
                 let statusBadge = 'bg-slate-100 text-slate-700 border-slate-200';
                 if (statusVal === 'Available') statusBadge = 'bg-emerald-50 text-emerald-700 border-emerald-200';
                 else if (statusVal === 'Returned') statusBadge = 'bg-slate-100 text-slate-600 border-slate-300';
-                else if (statusVal === 'Ocupado') statusBadge = 'bg-rose-50 text-rose-700 border-rose-200';
+                else if (statusVal === 'In Use') statusBadge = 'bg-rose-50 text-rose-700 border-rose-200';
 
                 html += `
                     <tr class="${rowBg} hover:bg-blue-50/50 transition-colors">
@@ -245,7 +245,7 @@
                                 class="p-1.5 rounded-lg font-medium text-xs ${statusBadge} border outline-none cursor-pointer transition shadow-2xs">
                                 <option value="Available" ${statusVal === 'Available' ? 'selected' : ''}>Available</option>
                                 <option value="Returned" ${statusVal === 'Returned' ? 'selected' : ''}>Returned</option>
-                                <option value="Ocupado" ${statusVal === 'Ocupado' ? 'selected' : ''}>Ocupado</option>
+                                <option value="In Use" ${statusVal === 'In Use' ? 'selected' : ''}>In Use</option>
                             </select>
                         </td>
                     </tr>

@@ -4,9 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ec4d68de-d5a6-47f3-a815-cba2c351ffae" name="Changes" comment="CarSpotJer 0.0.12">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-    </list>
+    <list default="true" id="ec4d68de-d5a6-47f3-a815-cba2c351ffae" name="Changes" comment="CarSpotJer 0.0.14" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -163,7 +161,23 @@
       <option name="project" value="LOCAL" />
       <updated>1788769526048</updated>
     </task>
-    <option name="localTasksCounter" value="13" />
+    <task id="LOCAL-00013" summary="CarSpotJer 0.0.13">
+      <option name="closed" value="true" />
+      <created>1788786694260</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1788786694260</updated>
+    </task>
+    <task id="LOCAL-00014" summary="CarSpotJer 0.0.14">
+      <option name="closed" value="true" />
+      <created>1788786849042</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1788786849042</updated>
+    </task>
+    <option name="localTasksCounter" value="15" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -179,7 +193,9 @@
     <MESSAGE value="CarSpotJer 0.0.10" />
     <MESSAGE value="CarSpotJer 0.0.11" />
     <MESSAGE value="CarSpotJer 0.0.12" />
-    <option name="LAST_COMMIT_MESSAGE" value="CarSpotJer 0.0.12" />
+    <MESSAGE value="CarSpotJer 0.0.13" />
+    <MESSAGE value="CarSpotJer 0.0.14" />
+    <option name="LAST_COMMIT_MESSAGE" value="CarSpotJer 0.0.14" />
   </component>
   <component name="github-copilot-workspace">
     <instructionFileLocations>
