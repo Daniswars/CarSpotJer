@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ZAW Yard Control</title>
+    <title>CTS - Centro Técnico SEAT</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Supabase JS -->
@@ -11,11 +11,11 @@
 </head>
 <body class="bg-gray-50 min-h-screen flex flex-col">
 
-    <!-- Cabecera tipo OneNote -->
+    <!-- Cabecera -->
     <header class="bg-white border-b border-gray-200 px-4 py-3 flex justify-between items-center sticky top-0 z-10 shadow-sm">
         <div>
-            <h1 class="text-sm font-bold text-gray-800 uppercase tracking-wide">ZAW Yard Control</h1>
-            <p class="text-[10px] text-gray-500">Live Fleet Management</p>
+            <h1 class="text-sm font-bold text-gray-800 uppercase tracking-wide">CTS - Centro Técnico SEAT</h1>
+            <p class="text-[10px] text-gray-500">Fleet Management</p>
         </div>
         <button onclick="abrirModal()" class="bg-blue-600 hover:bg-blue-700 text-white w-9 h-9 rounded-full flex items-center justify-center font-bold text-lg shadow transition">
             +
@@ -29,16 +29,15 @@
                 <table class="w-full text-left border-collapse text-xs">
                     <thead>
                         <tr class="bg-gray-100 text-gray-600 border-b border-gray-200 uppercase text-[10px]">
-                            <th class="p-2">VIN</th>
-                            <th class="p-2">Location</th>
-                            <th class="p-2">Chemistry</th>
-                            <th class="p-2">HW / SW</th>
-                            <th class="p-2 text-center">Action</th>
+                            <th class="p-2.5">VIN</th>
+                            <th class="p-2.5">Location</th>
+                            <th class="p-2.5">Chemistry</th>
+                            <th class="p-2.5 text-center">Action</th>
                         </tr>
                     </thead>
                     <tbody id="tabla-vehiculos" class="divide-y divide-gray-100">
                         <tr>
-                            <td colspan="5" class="p-4 text-center text-gray-400 italic">Loading fleet data...</td>
+                            <td colspan="4" class="p-4 text-center text-gray-400 italic">Loading data...</td>
                         </tr>
                     </tbody>
                 </table>
@@ -46,9 +45,9 @@
         </div>
     </main>
 
-    <!-- Ventana Modal para Añadir Vehículo (Oculta por defecto) -->
+    <!-- Ventana Modal para Añadir Vehículo -->
     <div id="modal-vehiculo" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-lg max-w-sm w-full p-5 space-y-4 shadow-xl relative animate-in fade-in zoom-in duration-150">
+        <div class="bg-white rounded-lg max-w-sm w-full p-5 space-y-4 shadow-xl">
             <div class="flex justify-between items-center border-b pb-2">
                 <h2 class="text-sm font-bold text-gray-800">Add New Vehicle</h2>
                 <button onclick="cerrarModal()" class="text-gray-400 hover:text-gray-600 font-bold text-lg px-2">&times;</button>
@@ -60,8 +59,8 @@
                     <input type="text" id="nuevo-vin" placeholder="e.g. 3230" class="w-full p-2 border border-gray-300 rounded uppercase">
                 </div>
                 <div>
-                    <label class="block font-medium text-gray-700 mb-1">Location (Plaza)</label>
-                    <input type="text" id="nuevo-location" placeholder="e.g. ZAW-04" class="w-full p-2 border border-gray-300 rounded uppercase">
+                    <label class="block font-medium text-gray-700 mb-1">Location</label>
+                    <input type="text" id="nuevo-location" placeholder="e.g. xxxTCE" class="w-full p-2 border border-gray-300 rounded uppercase">
                 </div>
                 <div>
                     <label class="block font-medium text-gray-700 mb-1">Chemistry</label>
@@ -112,12 +111,12 @@
                 .order('id', { ascending: false });
 
             if (error) {
-                tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-red-500">Error loading data</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-red-500">Error loading data: ${error.message}</td></tr>`;
                 return;
             }
 
             if (!data || data.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-gray-400 italic">No vehicles found.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-gray-400 italic">No vehicles found.</td></tr>`;
                 return;
             }
 
@@ -125,24 +124,21 @@
             data.forEach(v => {
                 html += `
                     <tr class="hover:bg-gray-50 border-b border-gray-100">
-                        <td class="p-2 font-bold text-gray-900">${v.vin || '-'}</td>
-                        <td class="p-2">
+                        <td class="p-2.5 font-bold text-gray-900">${v.vin || '-'}</td>
+                        <td class="p-2.5">
                             <input type="text" value="${v.location || ''}"
                                 onchange="actualizarCampo(${v.id}, 'location', this.value)"
-                                class="w-full p-1 border border-transparent hover:border-gray-300 focus:border-blue-500 rounded bg-transparent uppercase font-semibold text-blue-600">
+                                class="w-full p-1 border border-transparent hover:border-gray-300 focus:border-blue-500 rounded bg-transparent font-semibold text-blue-600">
                         </td>
-                        <td class="p-2">
+                        <td class="p-2.5">
                             <select onchange="actualizarCampo(${v.id}, 'chemistry', this.value)"
                                 class="p-1 border border-transparent hover:border-gray-300 focus:border-blue-500 rounded bg-transparent text-gray-700 font-medium">
                                 <option value="NMC" ${v.chemistry === 'NMC' ? 'selected' : ''}>NMC</option>
                                 <option value="LFP" ${v.chemistry === 'LFP' ? 'selected' : ''}>LFP</option>
                             </select>
                         </td>
-                        <td class="p-2 text-gray-500 text-[10px]">
-                            HW: ${v.hw || '-'}<br>SW: ${v.sw || '-'}
-                        </td>
-                        <td class="p-2 text-center">
-                            <button onclick="eliminarVehiculo(${v.id})" class="text-red-400 hover:text-red-600 font-bold px-1" title="Delete">×</button>
+                        <td class="p-2.5 text-center">
+                            <button onclick="eliminarVehiculo(${v.id})" class="text-red-400 hover:text-red-600 font-bold px-2 py-1" title="Delete">×</button>
                         </td>
                     </tr>
                 `;
@@ -162,7 +158,7 @@
 
             const { error } = await _supabase
                 .from('vehiculos')
-                .insert([{ vin, location, chemistry, power: 'ON' }]);
+                .insert([{ vin, location, chemistry }]);
 
             if (error) {
                 alert('Error: ' + error.message);
