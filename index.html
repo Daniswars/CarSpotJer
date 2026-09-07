@@ -89,6 +89,7 @@
                     <select id="new-ids" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition">
                         <option value="6.3">6.3</option>
                         <option value="8.2">8.2</option>
+                        <option value="NaN">NaN</option>
                     </select>
                 </div>
                 <div>
@@ -194,14 +195,14 @@
                 const userVal = v.User || v.user || 'FFV';
                 const statusVal = v.Status || v.status || 'Available';
 
-                // Colores específicos para User: FFV (Naranja), TMM (Verde), HVS (Amarillo), HUT (Azul)
+                // Colores actualizados para User: FFV (Naranja), TMM (Verde), HVS (Rojo), HUT (Azul)
                 let userBadge = 'bg-slate-100 text-slate-700 border-slate-200';
                 if (userVal === 'FFV') userBadge = 'bg-orange-50 text-orange-700 border-orange-200';
                 else if (userVal === 'TMM') userBadge = 'bg-emerald-50 text-emerald-700 border-emerald-200';
-                else if (userVal === 'HVS') userBadge = 'bg-amber-50 text-amber-700 border-amber-200';
+                else if (userVal === 'HVS') userBadge = 'bg-rose-50 text-rose-700 border-rose-200';
                 else if (userVal === 'HUT') userBadge = 'bg-blue-50 text-blue-700 border-blue-200';
 
-                // Colores específicos para Status: Available (Verde), Returned (Gris), In Use (Azul/Otro)
+                // Colores específicos para Status: Available (Verde), Returned (Gris), In Use (Celeste)
                 let statusBadge = 'bg-slate-100 text-slate-700 border-slate-200';
                 if (statusVal === 'Available') statusBadge = 'bg-emerald-50 text-emerald-700 border-emerald-200';
                 else if (statusVal === 'Returned') statusBadge = 'bg-slate-100 text-slate-600 border-slate-300';
@@ -227,6 +228,7 @@
                                 class="p-1.5 rounded-lg font-medium text-xs bg-slate-50 border border-slate-200 outline-none cursor-pointer transition shadow-2xs">
                                 <option value="6.3" ${idsVal == '6.3' ? 'selected' : ''}>6.3</option>
                                 <option value="8.2" ${idsVal == '8.2' ? 'selected' : ''}>8.2</option>
+                                <option value="NaN" ${idsVal == 'NaN' ? 'selected' : ''}>NaN</option>
                             </select>
                         </td>
                         <td class="py-3.5 px-4">
@@ -298,7 +300,6 @@
                 alert('Error updating field: ' + error.message);
                 fetchVehicles();
             } else {
-                // Recargar para aplicar colores dinámicos al instante al cambiar el select
                 fetchVehicles();
             }
         }
