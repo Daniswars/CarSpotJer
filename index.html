@@ -4,40 +4,36 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CTS - Centro Técnico SEAT</title>
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Supabase JS -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
-<body class="bg-gray-50 min-h-screen flex flex-col">
+<body class="bg-slate-50 min-h-screen flex flex-col font-sans">
 
-    <!-- Cabecera -->
-    <header class="bg-white border-b border-gray-200 px-4 py-3 flex justify-between items-center sticky top-0 z-10 shadow-sm">
+    <header class="bg-white border-b border-slate-200 px-4 py-3 flex justify-between items-center sticky top-0 z-10 shadow-sm">
         <div>
-            <h1 class="text-sm font-bold text-gray-800 uppercase tracking-wide">CTS - Centro Técnico SEAT</h1>
-            <p class="text-[10px] text-gray-500">Fleet Management</p>
+            <h1 class="text-sm font-bold text-slate-800 uppercase tracking-wide">CTS SEAT</h1>
+            <p class="text-[10px] text-slate-500 font-medium">Centro Técnico • Fleet Management</p>
         </div>
-        <button onclick="abrirModal()" class="bg-blue-600 hover:bg-blue-700 text-white w-9 h-9 rounded-full flex items-center justify-center font-bold text-lg shadow transition">
+        <button onclick="abrirModal()" class="bg-blue-600 hover:bg-blue-700 active:scale-95 text-white w-9 h-9 rounded-full flex items-center justify-center font-bold text-lg shadow-md transition-all duration-150">
             +
         </button>
     </header>
 
-    <!-- Contenido Principal: Tabla Limpia -->
-    <main class="p-2 flex-1 max-w-4xl mx-auto w-full">
-        <div class="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
+    <main class="p-2 sm:p-4 flex-1 max-w-4xl mx-auto w-full">
+        <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse text-xs">
                     <thead>
-                        <tr class="bg-gray-100 text-gray-600 border-b border-gray-200 uppercase text-[10px]">
-                            <th class="p-2.5">VIN</th>
-                            <th class="p-2.5">Location</th>
-                            <th class="p-2.5">Chemistry</th>
-                            <th class="p-2.5 text-center">Action</th>
+                        <tr class="bg-slate-100 text-slate-600 border-b border-slate-200 uppercase text-[10px] tracking-wider">
+                            <th class="py-3 px-3">VIN</th>
+                            <th class="py-3 px-3">Location</th>
+                            <th class="py-3 px-3">Chemistry</th>
+                            <th class="py-3 px-3 text-center">Action</th>
                         </tr>
                     </thead>
-                    <tbody id="tabla-vehiculos" class="divide-y divide-gray-100">
+                    <tbody id="tabla-vehiculos" class="divide-y divide-slate-100">
                         <tr>
-                            <td colspan="4" class="p-4 text-center text-gray-400 italic">Loading data...</td>
+                            <td colspan="4" class="p-6 text-center text-slate-400 italic font-medium">Loading fleet data...</td>
                         </tr>
                     </tbody>
                 </table>
@@ -45,26 +41,28 @@
         </div>
     </main>
 
-    <!-- Ventana Modal para Añadir Vehículo -->
-    <div id="modal-vehiculo" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-lg max-w-sm w-full p-5 space-y-4 shadow-xl">
-            <div class="flex justify-between items-center border-b pb-2">
-                <h2 class="text-sm font-bold text-gray-800">Add New Vehicle</h2>
-                <button onclick="cerrarModal()" class="text-gray-400 hover:text-gray-600 font-bold text-lg px-2">&times;</button>
+    <div id="modal-vehiculo" class="fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4 transition-all">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-5 space-y-4 shadow-2xl border border-slate-100 transform scale-100 transition-transform">
+            <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+                <div>
+                    <h2 class="text-sm font-bold text-slate-800">Add New Vehicle</h2>
+                    <p class="text-[10px] text-slate-400">Register a new unit into the fleet</p>
+                </div>
+                <button onclick="cerrarModal()" class="text-slate-400 hover:text-slate-600 font-bold text-xl px-2">&times;</button>
             </div>
 
             <div class="space-y-3 text-xs">
                 <div>
-                    <label class="block font-medium text-gray-700 mb-1">VIN</label>
-                    <input type="text" id="nuevo-vin" placeholder="e.g. 3230" class="w-full p-2 border border-gray-300 rounded uppercase">
+                    <label class="block font-semibold text-slate-700 mb-1">VIN</label>
+                    <input type="text" id="nuevo-vin" placeholder="e.g. 3230" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg uppercase focus:bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition">
                 </div>
                 <div>
-                    <label class="block font-medium text-gray-700 mb-1">Location</label>
-                    <input type="text" id="nuevo-location" placeholder="e.g. xxxTCE" class="w-full p-2 border border-gray-300 rounded uppercase">
+                    <label class="block font-semibold text-slate-700 mb-1">Location</label>
+                    <input type="text" id="nuevo-location" placeholder="e.g. xxxTCE" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg uppercase focus:bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition">
                 </div>
                 <div>
-                    <label class="block font-medium text-gray-700 mb-1">Chemistry</label>
-                    <select id="nuevo-chemistry" class="w-full p-2 border border-gray-300 rounded bg-white">
+                    <label class="block font-semibold text-slate-700 mb-1">Chemistry</label>
+                    <select id="nuevo-chemistry" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition">
                         <option value="NMC">NMC</option>
                         <option value="LFP">LFP</option>
                     </select>
@@ -72,18 +70,17 @@
             </div>
 
             <div class="flex space-x-2 pt-2">
-                <button onclick="cerrarModal()" class="w-1/2 bg-gray-200 text-gray-700 py-2 rounded font-semibold hover:bg-gray-300 transition">Cancel</button>
-                <button onclick="guardarNuevoVehiculo()" class="w-1/2 bg-blue-600 text-white py-2 rounded font-semibold hover:bg-blue-700 transition">Save</button>
+                <button onclick="cerrarModal()" class="w-1/2 bg-slate-100 text-slate-700 py-2.5 rounded-lg font-semibold hover:bg-slate-200 transition">Cancel</button>
+                <button onclick="guardarNuevoVehiculo()" class="w-1/2 bg-blue-600 text-white py-2.5 rounded-lg font-semibold hover:bg-blue-700 shadow-sm transition">Save</button>
             </div>
         </div>
     </div>
 
-    <!-- Script de Supabase y Lógica -->
     <script>
-        // --- PEGA TU CLAVE ANON DE SUPABASE AQUÍ ---
+        // --- CREDENCIALES DE SUPABASE ---
         const SUPABASE_URL = 'https://yypvitglzuraojaappyn.supabase.co';
-        const SUPABASE_ANON_KEY = 'PEGA_AQUÍ_TU_CLAVE_ANON_PÚBLICA';
-        // ------------------------------------------
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl5cHZpdGdsenVyYW9qYWFwcHluIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg3NTg4MzQsImV4cCI6MjEwNDMzNDgzNH0.7jBTVftwb91k5yn6xBP2bBWN5PFY7Dq0gYNX5MJeYiA';
+        // ------------------------------
 
         const { createClient } = supabase;
         const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -111,34 +108,38 @@
                 .order('id', { ascending: false });
 
             if (error) {
-                tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-red-500">Error loading data: ${error.message}</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="4" class="p-6 text-center text-red-500 font-medium">Error loading data: ${error.message}</td></tr>`;
                 return;
             }
 
             if (!data || data.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-gray-400 italic">No vehicles found.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="4" class="p-6 text-center text-slate-400 italic">No vehicles found.</td></tr>`;
                 return;
             }
 
             let html = '';
             data.forEach(v => {
+                const chemBadge = v.chemistry === 'LFP'
+                    ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                    : 'bg-indigo-50 text-indigo-700 border-indigo-200';
+
                 html += `
-                    <tr class="hover:bg-gray-50 border-b border-gray-100">
-                        <td class="p-2.5 font-bold text-gray-900">${v.vin || '-'}</td>
-                        <td class="p-2.5">
+                    <tr class="hover:bg-slate-50/80 transition-colors">
+                        <td class="py-3 px-3 font-bold text-slate-900">${v.vin || '-'}</td>
+                        <td class="py-3 px-3">
                             <input type="text" value="${v.location || ''}"
                                 onchange="actualizarCampo(${v.id}, 'location', this.value)"
-                                class="w-full p-1 border border-transparent hover:border-gray-300 focus:border-blue-500 rounded bg-transparent font-semibold text-blue-600">
+                                class="w-full p-1.5 border border-transparent hover:border-slate-200 focus:border-blue-500 focus:bg-white rounded font-semibold text-blue-600 bg-transparent uppercase transition">
                         </td>
-                        <td class="p-2.5">
+                        <td class="py-3 px-3">
                             <select onchange="actualizarCampo(${v.id}, 'chemistry', this.value)"
-                                class="p-1 border border-transparent hover:border-gray-300 focus:border-blue-500 rounded bg-transparent text-gray-700 font-medium">
+                                class="p-1.5 border border-transparent hover:border-slate-200 focus:border-blue-500 focus:bg-white rounded font-medium text-xs ${chemBadge} border outline-none transition">
                                 <option value="NMC" ${v.chemistry === 'NMC' ? 'selected' : ''}>NMC</option>
                                 <option value="LFP" ${v.chemistry === 'LFP' ? 'selected' : ''}>LFP</option>
                             </select>
                         </td>
-                        <td class="p-2.5 text-center">
-                            <button onclick="eliminarVehiculo(${v.id})" class="text-red-400 hover:text-red-600 font-bold px-2 py-1" title="Delete">×</button>
+                        <td class="py-3 px-3 text-center">
+                            <button onclick="eliminarVehiculo(${v.id})" class="text-slate-300 hover:text-red-500 font-bold p-1 rounded transition" title="Delete">×</button>
                         </td>
                     </tr>
                 `;
@@ -148,7 +149,7 @@
 
         async function guardarNuevoVehiculo() {
             const vin = document.getElementById('nuevo-vin').value.trim().toUpperCase();
-            const location = document.getElementById('nuevo-location').value.trim();
+            const location = document.getElementById('nuevo-location').value.trim().toUpperCase();
             const chemistry = document.getElementById('nuevo-chemistry').value;
 
             if(!vin || !location) {
@@ -169,9 +170,10 @@
         }
 
         async function actualizarCampo(id, campo, valor) {
+            const valorFinal = campo === 'location' ? valor.toUpperCase() : valor;
             const { error } = await _supabase
                 .from('vehiculos')
-                .update({ [campo]: valor })
+                .update({ [campo]: valorFinal })
                 .eq('id', id);
 
             if (error) {
