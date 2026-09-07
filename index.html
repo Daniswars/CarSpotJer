@@ -85,7 +85,8 @@
                 <div>
                     <label class="block font-semibold text-slate-700 mb-1">IDS</label>
                     <select id="new-ids" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition">
-                        <!-- Script will populate 6.3 to 8.2 dynamically -->
+                        <option value="6.3">6.3</option>
+                        <option value="8.2">8.2</option>
                     </select>
                 </div>
                 <div>
@@ -121,18 +122,8 @@
         let currentSort = { field: 'VIN', ascending: true };
 
         window.onload = function() {
-            populateIdsOptions();
             fetchVehicles();
         };
-
-        function populateIdsOptions() {
-            const selectNewIds = document.getElementById('new-ids');
-            let optionsHtml = '';
-            for (let i = 6.3; i <= 8.2; i = +(i + 0.1).toFixed(1)) {
-                optionsHtml += `<option value="${i}">${i}</option>`;
-            }
-            selectNewIds.innerHTML = optionsHtml;
-        }
 
         function openModal() {
             document.getElementById('vehicle-modal').classList.remove('hidden');
@@ -178,12 +169,6 @@
                 return 0;
             });
 
-            // Generate IDS dropdown options helper
-            let idsOptions = '';
-            for (let i = 6.3; i <= 8.2; i = +(i + 0.1).toFixed(1)) {
-                idsOptions += `<option value="${i}">${i}</option>`;
-            }
-
             let html = '';
             vehicleList.forEach((v, index) => {
                 const rowBg = index % 2 === 0 ? 'bg-white' : 'bg-slate-50/70';
@@ -216,7 +201,8 @@
                         <td class="py-3.5 px-4">
                             <select onchange="updateField(${v.id}, 'IDS', this.value)"
                                 class="p-1.5 rounded-lg font-medium text-xs bg-slate-50 border border-slate-200 outline-none cursor-pointer transition shadow-2xs">
-                                ${idsOptions.replace(`value="${idsVal}"`, `value="${idsVal}" selected`)}
+                                <option value="6.3" ${idsVal == '6.3' ? 'selected' : ''}>6.3</option>
+                                <option value="8.2" ${idsVal == '8.2' ? 'selected' : ''}>8.2</option>
                             </select>
                         </td>
                         <td class="py-3.5 px-4">
@@ -287,7 +273,7 @@
         async function deleteVehicle(id) {
             if(confirm('Are you sure you want to delete this vehicle?')) {
                 const { error } = await _supabase
-                    .from(TABLE_Name || TABLE_NAME)
+                    .from(TABLE_NAME)
                     .delete()
                     .eq('id', id);
 
